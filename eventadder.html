@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Event</title>
+    <style>
+        body {
+            background-color: black;
+            color: yellow;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 60%;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        }
+        label, input, textarea {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            font-size: 1rem;
+            border: none;
+            border-radius: 5px;
+        }
+        input[type="submit"] {
+            background-color: yellow;
+            color: black;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #ffcc00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Add New Event</h2>
+        <form id="eventForm">
+            <label for="name">Event Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="description">Event Description:</label>
+            <textarea id="description" name="description"></textarea>
+
+            <label for="linkName">External Link Name:</label>
+            <input type="text" id="linkName" name="linkName">
+
+            <label for="linkURL">External Link URL:</label>
+            <input type="url" id="linkURL" name="linkURL">
+
+            <input type="submit" value="Add Event">
+        </form>
+    </div>
+
+    <script>
+        // Handle form submission
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Create an event object
+            const event = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                linkName: document.getElementById('linkName').value,
+                linkURL: document.getElementById('linkURL').value,
+                timestamp: new Date().toISOString(), // Add the current timestamp
+            };
+
+            // Retrieve events from localStorage, or create an empty array if none exist
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+
+            // Add the new event to the array
+            events.push(event);
+
+            // Store the updated events back to localStorage
+            localStorage.setItem('events', JSON.stringify(events));
+
+            // Confirm the event is added
+            alert('Event added successfully!');
+
+            // Reset the form
+            document.getElementById('eventForm').reset();
+        });
+    </script>
+
+</body>
+</html>

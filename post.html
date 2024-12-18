@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create a New Post</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            padding: 20px;
+        }
+
+        form {
+            background-color: #1e1e1e;
+            border: 1px solid #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        form input, form textarea, form button {
+            width: 100%;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #007bff;
+            border-radius: 4px;
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        form input[type="file"] {
+            padding: 5px;
+        }
+
+        form button {
+            background-color: #007bff;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        form button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create a New Post</h1>
+    <form id="post-form">
+        <input type="text" id="title" placeholder="Post Title" required>
+        <textarea id="content" rows="5" placeholder="Post Content" required></textarea>
+        <input type="file" id="image" accept="image/*">
+        <input type="file" id="video" accept="video/*">
+        <button type="submit">Submit Post</button>
+    </form>
+
+    <script>
+        document.getElementById('post-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const title = document.getElementById('title').value;
+            const content = document.getElementById('content').value;
+            const imageFile = document.getElementById('image').files[0];
+            const videoFile = document.getElementById('video').files[0];
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const posts = JSON.parse(localStorage.getItem('blogPosts')) || [];
+                posts.push({
+                    title,
+                    content,
+                    image: imageFile ? reader.result : null,
+                    video: videoFile ? reader.result : null
+                });
+                localStorage.setItem('blogPosts', JSON.stringify(posts));
+                alert('Post added successfully!');
+                window.location.href = 'index.html';
+            };
+
+            if (imageFile || videoFile) {
+                const file = imageFile || videoFile;
+                reader.readAsDataURL(file);
+            } else {
+                reader.onloadend();
+            }
+        });
+    </script>
+</body>
+</html>

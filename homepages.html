@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212; /* Dark background */
+            color: #fff; /* White text */
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: #0A3D62; /* Blue background */
+            color: #fff;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 36px;
+        }
+
+        /* Button Container */
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Two buttons per row */
+            gap: 20px;
+        }
+
+        /* Button Styles */
+        .button {
+            background-color: #1E2A47; /* Dark blue background */
+            color: #fff;
+            font-size: 18px;
+            padding: 15px;
+            text-decoration: none;
+            border-radius: 8px;
+            display: block;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #3A4A73; /* Lighter blue when hovered */
+        }
+
+        @media (max-width: 768px) {
+            .button-container {
+                grid-template-columns: 1fr; /* Single column for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Welcome to the Admin Dashboard</h1>
+    </header>
+
+    <div class="button-container">
+        <a href="donateinfo.html" class="button">Donation Info</a>
+        <a href="eventadder.html" class="button">Event Adder</a>
+        <a href="eventmanager.html" class="button">Event Manager</a>
+        <a href="managepost.html" class="button">Post Manager</a>
+        <a href="payedit.html" class="button">Pay Edit</a>
+        <a href="post.html" class="button">Post</a>
+        <a href="timit.html" class="button">Timit Registrant</a>
+        <a href="seminarbackend.html" class="button">Seminar Payer</a>
+    </div>
+
+</body>
+</html>

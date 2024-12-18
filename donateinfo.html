@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Backend</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            color: #fff;
+        }
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            background: #001f3f;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #00aaff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #00aaff;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #00264d;
+            color: #00aaff;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #ff3333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Donations Overview</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+            <tbody id="donationsTable">
+                <!-- Donations will be inserted here -->
+            </tbody>
+        </table>
+        <button onclick="clearDonations()">Clear All Donations</button>
+    </div>
+
+    <script>
+        // Load donations from Local Storage and display them
+        function loadDonations() {
+            const donations = JSON.parse(localStorage.getItem('donations')) || [];
+            const tableBody = document.getElementById('donationsTable');
+
+            if (donations.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No donations available</td></tr>';
+                return;
+            }
+
+            tableBody.innerHTML = '';
+            donations.forEach(donation => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${donation.name}</td>
+                    <td>${donation.email}</td>
+                    <td>${donation.phone}</td>
+                    <td>$${donation.amount}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Clear all donations from Local Storage
+        function clearDonations() {
+            if (confirm('Are you sure you want to clear all donations? This action cannot be undone.')) {
+                localStorage.removeItem('donations');
+                loadDonations();
+            }
+        }
+
+        // Load donations on page load
+        window.onload = loadDonations;
+    </script>
+</body>
+</html>

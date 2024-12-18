@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1a1a1a;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #1a1a1a;
+        }
+        .login-box {
+            background-color: #0d0d0d;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #4f9dfe;
+        }
+        input[type="email"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            background-color: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: white;
+        }
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #4f9dfe;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #3578e5;
+        }
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }
+        .success-message {
+            color: green;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="login-box">
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="return validateForm()">
+                <input type="email" id="email" name="email" placeholder="Enter your email" required>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <input type="submit" value="Login">
+                <p class="error-message" id="error-message"></p>
+                <p class="success-message" id="success-message"></p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Define the correct credentials
+        const correctEmail = "1234567890@gmail.com";
+        const correctPassword = "142536amir";
+
+        // Function to validate the login form
+        function validateForm() {
+            // Prevent form submission
+            event.preventDefault();
+
+            // Get the values from the form inputs
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            // Get the error message element
+            const errorMessage = document.getElementById('error-message');
+            const successMessage = document.getElementById('success-message');
+
+            // Clear previous messages
+            errorMessage.innerHTML = '';
+            successMessage.innerHTML = '';
+
+            // Check if the email and password are correct
+            if (email === correctEmail && password === correctPassword) {
+                successMessage.innerHTML = "Login successful! Redirecting to homepage...";
+                setTimeout(function() {
+                    window.location.href = "homepage.html"; // Redirect to homepage
+                }, 2000);
+            } else {
+                errorMessage.innerHTML = "Invalid email or password. Please try again.";
+            }
+        }
+    </script>
+
+</body>
+</html>

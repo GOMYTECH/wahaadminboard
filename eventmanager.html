@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Events</title>
+    <style>
+        body {
+            background-color: black;
+            color: yellow;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            margin: 50px auto;
+            padding: 20px;
+            width: 80%;
+            background-color: #333;
+            border-radius: 10px;
+        }
+        h1 {
+            color: yellow;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .event {
+            background-color: #444;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .event button {
+            background-color: red;
+            color: yellow;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .event button:hover {
+            background-color: #ff6600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Manage Events</h1>
+        <div id="eventList"></div>
+    </div>
+
+    <script>
+       
+        function loadEvents() {
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            const eventList = document.getElementById('eventList');
+            eventList.innerHTML = ""; // Clear the event list before adding new events
+
+            if (events.length === 0) {
+                eventList.innerHTML = "<p>No events found.</p>";
+                return;
+            }
+
+            events.forEach((event, index) => {
+                const eventElement = document.createElement('div');
+                eventElement.classList.add('event');
+
+                // Display event data and a delete button
+                eventElement.innerHTML = `
+                    <span>${event.name}</span>
+                    <button onclick="deleteEvent(${index})">Delete</button>
+                `;
+                
+                eventList.appendChild(eventElement);
+            });
+        }
+
+       
+        function deleteEvent(index) {
+            const events = JSON.parse(localStorage.getItem('events')) || [];
+            events.splice(index, 1); 
+            localStorage.setItem('events', JSON.stringify(events)); 
+            loadEvents(); 
+        }
+
+
+        window.onload = loadEvents;
+    </script>
+
+</body>
+</html>
