@@ -71,7 +71,7 @@
         const registrantsList = document.getElementById('registrantsList');
         const copyButton = document.getElementById('copyNames');
 
-        // Load registrants from localStorage
+        // Load registrants from localStorage (or use an empty array if nothing is saved)
         const registrants = JSON.parse(localStorage.getItem('registrants')) || [];
 
         // Display registrants
@@ -126,4 +126,4 @@
     </script>
 
 </body>
-</html>
+    </html>
