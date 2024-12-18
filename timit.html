@@ -1,147 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #1a1a2e;
-            color: white;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 20px;
-        }
-        h1 {
-            text-align: center;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid white;
-            padding: 10px;
-            text-align: center;
-        }
-        .delete-btn {
-            background-color: #e43f5a;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            padding: 5px 10px;
-        }
-        button {
-            background-color: #1f4068;
-            color: white;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 5px;
-            border: none;
-            margin: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #1a1a2e;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid white;
+      padding: 10px;
+      text-align: center;
+    }
+    .delete-btn {
+      background-color: #e43f5a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+    button {
+      background-color: #1f4068;
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin: 5px;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Admin Panel</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Family Name</th>
-                    <th>Phone</th>
-                    <th>School</th>
-                    <th>Group</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody id="registrant-table"></tbody>
-        </table>
-        <button id="copy-all">Copy All Info</button>
-        <button id="copy-names">Copy All Names</button>
-    </div>
+  <div class="container">
+    <h1>Admin Panel</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Family Name</th>
+          <th>Phone</th>
+          <th>School</th>
+          <th>Group</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="registrant-table"></tbody>
+    </table>
+    <button id="copy-all">Copy All Info</button>
+    <button id="copy-names">Copy All Names</button>
+  </div>
 
-    <script>
-        let registrants = [];
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.5.0/firebase-database.js"></script>
 
-        // Function to render the table
-        const renderTable = () => {
-            const tableBody = document.querySelector("#registrant-table");
-            tableBody.innerHTML = "";
+  <script>
+    // Firebase configuration (replace with your own config)
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      databaseURL: "YOUR_DATABASE_URL",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID",
+    };
 
-            registrants.forEach((registrant, index) => {
-                const row = document.createElement("tr");
+    // Initialize Firebase
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-                row.innerHTML = `
-                    <td>${index + 1}</td>
-                    <td>${registrant.name}</td>
-                    <td>${registrant.familyName}</td>
-                    <td>${registrant.phone}</td>
-                    <td>${registrant.school}</td>
-                    <td>${registrant.group}</td>
-                    <td>
-                        <button class="delete-btn" data-index="${index}">Delete</button>
-                    </td>
-                `;
+    let registrants = []; // Store registrants in memory
 
-                tableBody.appendChild(row);
-            });
-        };
+    // Function to render the table
+    const renderTable = () => {
+      const tableBody = document.querySelector("#registrant-table");
+      tableBody.innerHTML = "";
+      registrants.forEach((registrant, index) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${index + 1}</td>
+          <td>${registrant.name}</td>
+          <td>${registrant.familyName}</td>
+          <td>${registrant.phone}</td>
+          <td>${registrant.school}</td>
+          <td>${registrant.group}</td>
+          <td>
+            <button class="delete-btn" data-key="${registrant.key}">Delete</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    };
 
-        // Function to load registrants from localStorage
-        const loadRegistrants = () => {
-            const storedRegistrants = JSON.parse(localStorage.getItem("registrants")) || [];
-            if (JSON.stringify(storedRegistrants) !== JSON.stringify(registrants)) {
-                registrants = storedRegistrants;
-                renderTable();
-            }
-        };
+    // Load registrants from Firebase
+    const loadRegistrants = () => {
+      const registrantsRef = database.ref('registrants');
+      registrantsRef.once('value', (snapshot) => {
+        registrants = snapshot.val() || [];
+        renderTable();
+      });
+    };
 
-        // Delete registrant
-        document.querySelector("#registrant-table").addEventListener("click", (e) => {
-            if (e.target.classList.contains("delete-btn")) {
-                const index = e.target.dataset.index;
-                registrants.splice(index, 1);
+    // Save new registrant to Firebase
+    const saveRegistrant = (registrant) => {
+      const registrantsRef = database.ref('registrants');
+      const newRegistrantRef = registrantsRef.push();
+      newRegistrantRef.set(registrant);
+    };
 
-                // Update localStorage
-                localStorage.setItem("registrants", JSON.stringify(registrants));
-                renderTable();
-            }
-        });
+    // Delete registrant from Firebase
+    document.querySelector("#registrant-table").addEventListener("click", (e) => {
+      if (e.target.classList.contains("delete-btn")) {
+        const key = e.target.dataset.key;
+        const registrantsRef = database.ref('registrants');
+        registrantsRef.child(key).remove();
+      }
+    });
 
-        // Copy all info
-        document.querySelector("#copy-all").addEventListener("click", () => {
-            const allInfo = registrants
-                .map(
-                    (reg, index) =>
-                        `${index + 1}. Name: ${reg.name}, Family Name: ${reg.familyName}, Phone: ${reg.phone}, School: ${reg.school}, Group: ${reg.group}`
-                )
-                .join("\n");
+    // Copy all info to clipboard
+    document.querySelector("#copy-all").addEventListener("click", () => {
+      const allInfo = registrants
+        .map((reg, index) => `${index + 1}. Name: ${reg.name}, Family Name: ${reg.familyName}, Phone: ${reg.phone}, School: ${reg.school}, Group: ${reg.group}`)
+        .join("\n");
+      navigator.clipboard.writeText(allInfo).then(() => alert("All info copied to clipboard!"));
+    });
 
-            navigator.clipboard.writeText(allInfo).then(() => alert("All info copied to clipboard!"));
-        });
+    // Copy all names to clipboard
+    document.querySelector("#copy-names").addEventListener("click", () => {
+      const allNames = registrants.map((reg) => reg.name).join("\n");
+      navigator.clipboard.writeText(allNames).then(() => alert("All names copied to clipboard!"));
+    });
 
-        // Copy all names
-        document.querySelector("#copy-names").addEventListener("click", () => {
-            const allNames = registrants.map((reg) => reg.name).join("\n");
-            navigator.clipboard.writeText(allNames).then(() => alert("All names copied to clipboard!"));
-        });
+    // Sync registrants in real-time (listening to changes)
+    const registrantsRef = database.ref('registrants');
+    registrantsRef.on('value', (snapshot) => {
+      registrants = snapshot.val() || [];
+      renderTable();
+    });
 
-        // Periodic polling to sync data every 2 seconds
-        setInterval(loadRegistrants, 2000);
-
-        // Initial load
-        loadRegistrants();
-    </script>
+    // Initial load
+    loadRegistrants();
+  </script>
 </body>
-</html>
-
+    </html>
