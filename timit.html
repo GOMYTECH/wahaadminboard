@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -73,25 +71,10 @@
     </div>
 
     <script>
-        // Firebase configuration
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            databaseURL: "YOUR_DATABASE_URL"
-        };
+        let registrants = [];
 
-        // Initialize Firebase
-        const app = firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-
-        const registrantsRef = firebase.database().ref("registrants");
-
-        // Render Table
-        const renderTable = (registrants) => {
+        // Function to render the table
+        const renderTable = () => {
             const tableBody = document.querySelector("#registrant-table");
             tableBody.innerHTML = "";
 
@@ -106,7 +89,7 @@
                     <td>${registrant.school}</td>
                     <td>${registrant.group}</td>
                     <td>
-                        <button class="delete-btn" data-id="${registrant.id}">Delete</button>
+                        <button class="delete-btn" data-index="${index}">Delete</button>
                     </td>
                 `;
 
@@ -114,49 +97,51 @@
             });
         };
 
-        // Fetch Registrants from Firebase
-        const fetchRegistrants = () => {
-            registrantsRef.on("value", (snapshot) => {
-                const data = snapshot.val();
-                const registrants = Object.keys(data || {}).map((key) => ({
-                    id: key,
-                    ...data[key],
-                }));
-                renderTable(registrants);
-            });
+        // Function to load registrants from localStorage
+        const loadRegistrants = () => {
+            const storedRegistrants = JSON.parse(localStorage.getItem("registrants")) || [];
+            if (JSON.stringify(storedRegistrants) !== JSON.stringify(registrants)) {
+                registrants = storedRegistrants;
+                renderTable();
+            }
         };
 
-        // Delete a Registrant
+        // Delete registrant
         document.querySelector("#registrant-table").addEventListener("click", (e) => {
             if (e.target.classList.contains("delete-btn")) {
-                const id = e.target.dataset.id;
-                registrantsRef.child(id).remove();
+                const index = e.target.dataset.index;
+                registrants.splice(index, 1);
+
+                // Update localStorage
+                localStorage.setItem("registrants", JSON.stringify(registrants));
+                renderTable();
             }
         });
 
-        // Copy All Info
+        // Copy all info
         document.querySelector("#copy-all").addEventListener("click", () => {
-            registrantsRef.once("value", (snapshot) => {
-                const data = snapshot.val();
-                const registrants = Object.keys(data || {}).map((key, index) => {
-                    const reg = data[key];
-                    return `${index + 1}. Name: ${reg.name}, Family Name: ${reg.familyName}, Phone: ${reg.phone}, School: ${reg.school}, Group: ${reg.group}`;
-                });
-                const allInfo = registrants.join("\n");
-                navigator.clipboard.writeText(allInfo).then(() => alert("All info copied to clipboard!"));
-            });
+            const allInfo = registrants
+                .map(
+                    (reg, index) =>
+                        `${index + 1}. Name: ${reg.name}, Family Name: ${reg.familyName}, Phone: ${reg.phone}, School: ${reg.school}, Group: ${reg.group}`
+                )
+                .join("\n");
+
+            navigator.clipboard.writeText(allInfo).then(() => alert("All info copied to clipboard!"));
         });
 
-        // Copy All Names
+        // Copy all names
         document.querySelector("#copy-names").addEventListener("click", () => {
-            registrantsRef.once("value", (snapshot) => {
-                const data = snapshot.val();
-                const allNames = Object.keys(data || {}).map((key) => data[key].name).join("\n");
-                navigator.clipboard.writeText(allNames).then(() => alert("All names copied to clipboard!"));
-            });
+            const allNames = registrants.map((reg) => reg.name).join("\n");
+            navigator.clipboard.writeText(allNames).then(() => alert("All names copied to clipboard!"));
         });
 
-        fetchRegistrants();
+        // Periodic polling to sync data every 2 seconds
+        setInterval(loadRegistrants, 2000);
+
+        // Initial load
+        loadRegistrants();
     </script>
 </body>
 </html>
+
